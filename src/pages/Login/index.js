@@ -1,18 +1,17 @@
-import {StyleSheet, Text, View, Button} from 'react-native';
-import React, {useState} from 'react';
+import { StyleSheet, Text, View, Button } from "react-native";
+import React, { useState, useContext } from "react";
 
 import {
   GoogleSignin,
   GoogleSigninButton,
   statusCodes,
-} from '@react-native-google-signin/google-signin';
-import {useFocusEffect} from '@react-navigation/native';
-import {useAuthState} from '../../config/context';
+} from "@react-native-google-signin/google-signin";
+import { useFocusEffect } from "@react-navigation/native";
+import { UserInfoContext } from "../../config/context";
 
-const Login = ({navigation}) => {
+const Login = ({ navigation }) => {
   const [isSigninInProgress, setIsSigninInProgress] = useState(false);
-
-  const isAuthenticated = useAuthState();
+  const userContext = useContext(UserInfoContext);
 
   GoogleSignin.configure({
     //webClientId is required if you need offline access
@@ -24,27 +23,30 @@ const Login = ({navigation}) => {
     // scopes: ['profile', 'email'],
 
     ClientId:
-      '518463237638-s7l90rqkf2dnarcc55btvkaqbv8nv49b.apps.googleusercontent.com',
+      "518463237638-s7l90rqkf2dnarcc55btvkaqbv8nv49b.apps.googleusercontent.com",
   });
 
   useFocusEffect(
     React.useCallback(() => {
       // const datauser = useAuthState();
       // console.log(datauser);
-    }, []),
+    }, [])
   );
 
   const onGoogleButtonPress = async () => {
-    // navigation.navigate('Home');
-    console.log(isAuthenticated);
+    userContext.dispatch("SIGN_IN", "Roma Debrian");
+    navigation.navigate("Home");
   };
 
   const signIn = async () => {
     try {
       await GoogleSignin.hasPlayServices();
-      const userInfo = await GoogleSignin.signIn();
+      const { user } = await GoogleSignin.signIn();
+
+      userContext.dispatch("SIGN_IN", user);
+      navigation.navigate("Home");
       // setState({userInfo});
-      console.log({userInfo});
+      // console.log(user);
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         // user cancelled the login flow
@@ -61,10 +63,11 @@ const Login = ({navigation}) => {
   return (
     <View
       style={{
-        height: '100%',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
+        height: "100%",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
       <Text>Login</Text>
       <Button title=" Sign With Google" onPress={onGoogleButtonPress} />
       <GoogleSigninButton

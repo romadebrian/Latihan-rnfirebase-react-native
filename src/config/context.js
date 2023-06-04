@@ -1,38 +1,28 @@
-import {Component, createContext, useContext, useEffect, useState} from 'react';
+import React, { useState, createContext } from "react";
 
-export const AuthContext = createContext();
+export const UserInfoContext = createContext();
 
-export const AuthContextProvider = props => {
-  const [user, setUser] = useState('loading');
-  // const [error, setError] = useState(null);
-  console.log('datauser firebase', user);
+export const ProviderUserInfo = ({ children }) => {
+  const [dataUser, setDataUser] = useState({ isLogin: false });
 
-  useEffect(() => {
-    // const unsubscribe = onAuthStateChanged(getAuth, setUser);
-    // return () => unsubscribe;
-  }, []);
-
-  return <AuthContext.Provider value={user} {...props} />;
-};
-
-export const useAuthState = () => {
-  const auth = useContext(AuthContext);
-  // console.log("test", auth);
-
-  return {auth};
-};
-
-const Cosumer = AuthContext.Consumer;
-export const DataCurrentUser = Childern => {
-  return class ParentCosumer extends Component {
-    render() {
-      return (
-        <Cosumer>
-          {value => {
-            return <Childern {...this.props} {...value} />;
-          }}
-        </Cosumer>
-      );
+  const dispatch = (action, data) => {
+    if (action === "SIGN_IN") {
+      setDataUser(data);
+    } else if (action === "SIGN_OUT") {
+      setDataUser({ isLogin: false });
     }
   };
+
+  console.log(dataUser);
+
+  return (
+    <UserInfoContext.Provider
+      value={{
+        state: dataUser,
+        dispatch: dispatch,
+      }}
+    >
+      {children}
+    </UserInfoContext.Provider>
+  );
 };
