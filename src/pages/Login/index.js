@@ -1,67 +1,46 @@
 import {StyleSheet, Text, View, Button} from 'react-native';
 import React, {useState} from 'react';
 
-import auth from '@react-native-firebase/auth';
 import {
   GoogleSignin,
   GoogleSigninButton,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
+import {useFocusEffect} from '@react-navigation/native';
+import {useAuthState} from '../../config/context';
 
-const Login = () => {
+const Login = ({navigation}) => {
   const [isSigninInProgress, setIsSigninInProgress] = useState(false);
+
+  const isAuthenticated = useAuthState();
+
   GoogleSignin.configure({
-    webClientId:
-      '799266533322-jsk1884q4bgfrblbdl1lsi3me2p3c525.apps.googleusercontent.com',
+    //webClientId is required if you need offline access
+    // offlineAccess: true,
+    // webClientId:
+    //   '518463237638-s7l90rqkf2dnarcc55btvkaqbv8nv49b.apps.googleusercontent.com',
+    // androidClientId:
+    //   '3242343242322432-2342323432232324343323.apps.googleusercontent.com',
+    // scopes: ['profile', 'email'],
+
+    ClientId:
+      '518463237638-s7l90rqkf2dnarcc55btvkaqbv8nv49b.apps.googleusercontent.com',
   });
 
+  useFocusEffect(
+    React.useCallback(() => {
+      // const datauser = useAuthState();
+      // console.log(datauser);
+    }, []),
+  );
+
   const onGoogleButtonPress = async () => {
-    GoogleSignin.configure({
-      ClientId:
-        '518463237638-s7l90rqkf2dnarcc55btvkaqbv8nv49b.apps.googleusercontent.com',
-    });
-
-    // Check if your device supports Google Play
-    await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
-
-    // Get the users ID token
-    const {idToken} = await GoogleSignin.signIn();
-
-    console.log(idToken);
-
-    // Create a Google credential with the token
-    // const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-
-    // Sign-in the user with the credential
-    // const user_sign_in = auth().signInWithCredential(googleCredential);
-
-    // user_sign_in
-    //   .then(user => {
-    //     console.log('Login Sucess', user);
-    //   })
-    //   .catch(error => {
-    //     console.log('Login error', error);
-    //     throw error;
-    //   });
-
-    // console.log(user_sign_in);
+    // navigation.navigate('Home');
+    console.log(isAuthenticated);
   };
 
   const signIn = async () => {
     try {
-      GoogleSignin.configure({
-        //webClientId is required if you need offline access
-        // offlineAccess: true,
-        // webClientId:
-        //   '518463237638-s7l90rqkf2dnarcc55btvkaqbv8nv49b.apps.googleusercontent.com',
-        // androidClientId:
-        //   '3242343242322432-2342323432232324343323.apps.googleusercontent.com',
-        // scopes: ['profile', 'email'],
-
-        ClientId:
-          '518463237638-s7l90rqkf2dnarcc55btvkaqbv8nv49b.apps.googleusercontent.com',
-      });
-
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
       // setState({userInfo});
